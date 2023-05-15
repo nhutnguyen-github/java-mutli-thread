@@ -15,7 +15,7 @@ public class ExceptionAdvice {
     @ResponseBody
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String getExceptionMessage(Exception excep){
-        return new StringBuilder("Server need time to process.").append(excep.getMessage()).toString();
+        return new StringBuilder("Server need time to process. ").append(excep.getMessage()).toString();
     }
 
     @ExceptionHandler(InterruptedException.class)

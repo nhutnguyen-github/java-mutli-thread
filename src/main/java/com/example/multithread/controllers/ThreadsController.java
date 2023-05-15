@@ -4,28 +4,30 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.RejectedExecutionHandler;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.multithread.services.ServiceLong;
+import com.example.multithread.services.ServiceLongImpl;
 import com.example.multithread.services.ServiceShort;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequiredArgsConstructor
 public class ThreadsController {
 
-    private final ThreadPoolTaskExecutor threadPoolTaskExecutor;
+    @Autowired
+    @Qualifier(value = "threadController")
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
-    private final ServiceShort serviceShort;
+    @Autowired
+    private ServiceShort serviceShort;
     
-    private final ServiceLong serviceLong;
+    @Autowired
+    private ServiceLongImpl serviceLong;
 
     @GetMapping("/getshort/{num}")
     @ResponseBody
@@ -33,7 +35,7 @@ public class ThreadsController {
         CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
             try {                
                 return serviceShort.getNextTwoInt(num);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new CompletionException(e);
             }
         }, threadPoolTaskExecutor);
@@ -63,7 +65,7 @@ public class ThreadsController {
         CompletableFuture<Integer> completableFuture = CompletableFuture.supplyAsync(() -> {
             try {
                 return serviceLong.getNextInt(num);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 throw new CompletionException(e);
             }
         }, threadPoolTaskExecutor);
