@@ -3,5 +3,5 @@ services:
     container_name: java-multi-thread
     image: java_multithread
     ports:
-      -8080:8080
+      - 8080:8080
     
